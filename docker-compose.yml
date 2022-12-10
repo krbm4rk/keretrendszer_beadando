@@ -1,0 +1,29 @@
+version: '3.3'
+services:
+  db:
+    image: 'mysql:8'
+    command: '--default-authentication-plugin=mysql_native_password'
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: Shakespeare
+    volumes:
+      - './src/main/resources/sql/DUMPED.sql:/docker-entrypoint-initdb.d/DUMPED.sql'
+    ports:
+      - '127.0.0.1:3306:3306'
+  backend:
+    build: .
+    ports:
+      - '127.0.0.1:8080:8080'
+    environment:
+#      '0': DB_USER=root
+#      '1': DB_PASSWORD=password
+#      '2': DB_HOST=localhost
+#      '3': DB_NAME=Shakespeare
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: Shakespeare
+      DB_USER: root
+      DB_PASSWORD: password
+    depends_on:
+      - db
